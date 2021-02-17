@@ -7,6 +7,7 @@ from discord.utils import get
 import requests
 import json
 import asyncio
+import os
 
 client = commands.Bot(command_prefix='?')
 
@@ -16,18 +17,18 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    await client.change_presence(activity=discord.Game('?verify <scratchusername>'))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='?verify <Scratch Username>'))
 
 @client.command()
 async def verify(ctx, username):
-    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=('28588350', '0b855b91d3bfbe6635195d4edf9bf147b3f7201d78a8786c7e8ddf2273959bb0'))
+    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=(os.getenv("ID"), os.getenv("Secret")))
     obj = json.loads(r.content)
     comment_code = obj["code"]
     embed = discord.Embed(
         description = 'React with ✅ to continue, and ❌ to cancel.',
         color = discord.Color.green())
 
-    embed.set_footer(text='Scratch Verifier Discord Bot is a project by SharkBaitBilly#5270')
+    embed.set_footer(text='Scratch Verifier is a project by SharkBaitBilly#5270')
     embed.set_author(name='Verify A Scratch User',
     icon_url='https://u.cubeupload.com/ajsya/scratchverifyer.png')
     embed.add_field(name='Comment the following code on your profile!', value=comment_code, inline=False)
@@ -39,10 +40,10 @@ async def verify(ctx, username):
     try:
         reaction, user = await client.wait_for('reaction_add', check=check, timeout=120.0)
     except asyncio.TimeoutError:
-        await ctx.send("User Verification Cancled")
+        await ctx.send("User Verification Cancled!")
     else:
         if str(reaction.emoji) == '✅':
-            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=('28588350', '0b855b91d3bfbe6635195d4edf9bf147b3f7201d78a8786c7e8ddf2273959bb0'))
+            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=(os.getenv("ID"), os.getenv("Secret")))
             if r.status_code == 204:
                 await ctx.author.edit(nick=username, reason='Verified with Scratch using ?verify <username>')
                 role = get(ctx.author.guild.roles, name='Verified')
@@ -69,7 +70,7 @@ async def profile(ctx, username):
         description = username + ' on Scratch!',
         color = discord.Color.orange())
 
-    embed.set_footer(text='Scratch Verifier Discord Bot is a project by SharkBaitBilly#5270')
+    embed.set_footer(text='Scratch Verifier is a project by SharkBaitBilly#5270')
     embed.set_author(name=username, icon_url=icon,)
     embed.set_thumbnail(url=icon)
     embed.add_field(name='About Me', value=userBio, inline=False)
@@ -100,12 +101,12 @@ async def scratchstats(ctx, username):
     embed.set_footer(text='Scratch Verifier Discord Bot is a project by SharkBaitBilly#5270')
     embed.set_author(name=username,
     icon_url=icon)
-    embed.add_field(name='Followers', value=userFollowers, inline=False)
+    embed.add_field(name='Followers', value=userFollowers, inline=True)
     embed.add_field(name='Following', value=userFollowing, inline=True)
+    embed.add_field(name='Total Loves', value=userLoves, inline=False)
+    embed.add_field(name='Total Favorites', value=userFavorites, inline=True)    
     embed.add_field(name='Total Views', value=userViews, inline=False)
     embed.add_field(name='Total Comments', value=userComments, inline=True)
-    embed.add_field(name='Total Loves', value=userLoves, inline=False)
-    embed.add_field(name='Total Favorites', value=userFavorites, inline=True)
     message = await ctx.send(embed=embed)
 
 
@@ -114,8 +115,8 @@ async def invite(ctx):
     embed = discord.Embed(
         color = discord.Color.orange())
 
-    embed.set_footer(text='Scratch Verifier Discord Bot is a project by SharkBaitBilly#5270')
-    embed.set_author(name='Scratch Verifier Discord Bot',
+    embed.set_footer(text='Scratch Verifier is a project by SharkBaitBilly#5270')
+    embed.set_author(name='Scratch Verifier',
     icon_url='https://u.cubeupload.com/ajsya/scratchverifyer.png')
     embed.add_field(name='Invite to your server!', value='https://discord.com/oauth2/authorize?client_id=736356485042274304&permissions=1543776320&scope=bot', inline=False)
     embed.add_field(name='Join our Support Server!', value='https://discord.gg/ZQHYX93PX5', inline=False)
@@ -125,16 +126,16 @@ async def invite(ctx):
 async def credits(ctx):
     embed = discord.Embed(
         title = 'Credits',
-        description = 'Without these people Scratch Verifier Discord Bot would not be possible',
+        description = 'Scratch Verifier would not be possible without the help of these people.',
         color = discord.Color.orange())
 
     embed.set_thumbnail(url='https://u.cubeupload.com/ajsya/scratchverifyer.png')
     embed.set_author(name='Scratch Verifier Discord Bot',
     icon_url='https://u.cubeupload.com/ajsya/scratchverifyer.png')
     embed.add_field(name='API Library', value='https://github.com/ScratchVerifier/ScratchVerifier', inline=False)
-    embed.add_field(name='SharkBaitBilly#5270', value="Head Developer", inline=False)
-    embed.add_field(name='Semisol#0001', value="Library Help", inline=False)
+    embed.add_field(name='Head Developer', value="SharkBaitBilly#5270", inline=False)
+    embed.add_field(name='Library Help', value="Semisol#0001", inline=False)
     await ctx.send(embed=embed)
 
-TOKEN = "NzM2MzU2NDg1MDQyMjc0MzA0.Xxtnag.amczYDbe7xsFfCr-sPYZ97KA95g"
+TOKEN = os.getenv("TOKEN")
 client.run(TOKEN)
