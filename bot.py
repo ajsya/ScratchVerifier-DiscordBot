@@ -7,7 +7,6 @@ from discord.utils import get
 import requests
 import json
 import asyncio
-import os
 
 client = commands.Bot(command_prefix='?')
 
@@ -137,5 +136,5 @@ async def credits(ctx):
     embed.add_field(name='Library Help', value="Semisol#0001", inline=False)
     await ctx.send(embed=embed)
 
-TOKEN = "NzM2MzU2NDg1MDQyMjc0MzA0.Xxtnag.amczYDbe7xsFfCr-sPYZ97KA95g"
+TOKEN = "NzM2MzU2NDg1MDQyMjc0MzA0.Xxtnag.iJ4PU9FXLLizSzypMVj6uRJ35GM"
 client.run(TOKEN)
