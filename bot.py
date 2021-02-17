@@ -21,7 +21,7 @@ async def on_ready():
 
 @client.command()
 async def verify(ctx, username):
-    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=(os.getenv("ID"), os.getenv("Secret")))
+    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=("40930944", "e7bb821847fa5cc376e32262a06de66c240095887dc0e15ba1bf9b0d29640822"))
     obj = json.loads(r.content)
     comment_code = obj["code"]
     embed = discord.Embed(
@@ -43,7 +43,7 @@ async def verify(ctx, username):
         await ctx.send("User Verification Cancled!")
     else:
         if str(reaction.emoji) == '✅':
-            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=(os.getenv("ID"), os.getenv("Secret")))
+            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=("40930944", "e7bb821847fa5cc376e32262a06de66c240095887dc0e15ba1bf9b0d29640822"))
             if r.status_code == 204:
                 await ctx.author.edit(nick=username, reason='Verified with Scratch using ?verify <username>')
                 role = get(ctx.author.guild.roles, name='Verified')
@@ -137,5 +137,5 @@ async def credits(ctx):
     embed.add_field(name='Library Help', value="Semisol#0001", inline=False)
     await ctx.send(embed=embed)
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = "NzM2MzU2NDg1MDQyMjc0MzA0.Xxtnag.amczYDbe7xsFfCr-sPYZ97KA95g"
 client.run(TOKEN)
