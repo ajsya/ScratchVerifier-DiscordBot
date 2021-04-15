@@ -1,4 +1,3 @@
-# bot code here
 import discord
 from discord.ext import commands
 from discord.ext.commands.converter import InviteConverter
@@ -7,6 +6,15 @@ from discord.utils import get
 import requests
 import json
 import asyncio
+import os
+import dotenv
+from dotenv import load_dotenv
+
+load_dotenv()
+
+id = os.getenv("ID")
+secret = os.getenv("Secret")
+token = os.getenv("TOKEN")
 
 client = commands.Bot(command_prefix='?')
 
@@ -20,11 +28,11 @@ async def on_ready():
 
 @client.command()
 async def verify(ctx, username):
-    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=("40930944", "e7bb821847fa5cc376e32262a06de66c240095887dc0e15ba1bf9b0d29640822"))
+    r = requests.put('https://scratchverifier.ddns.net/verify/' + username, auth=(id, secret))
     obj = json.loads(r.content)
     comment_code = obj["code"]
     embed = discord.Embed(
-        description = 'React with ✅ to continue, and ❌ to cancel.',
+        description = 'React with ✅ to continue, and ❌ to cancel. \n [Your Profile](https://scratch.mit.edu/users/{0})'.format(username),
         color = discord.Color.green())
 
     embed.set_footer(text='Scratch Verifier is a project by SharkBaitBilly#5270')
@@ -42,7 +50,7 @@ async def verify(ctx, username):
         await ctx.send("User Verification Cancled!")
     else:
         if str(reaction.emoji) == '✅':
-            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=("40930944", "e7bb821847fa5cc376e32262a06de66c240095887dc0e15ba1bf9b0d29640822"))
+            r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=(id, secret))
             if r.status_code == 204:
                 await ctx.author.edit(nick=username, reason='Verified with Scratch using ?verify <username>')
                 role = get(ctx.author.guild.roles, name='Verified')
@@ -136,5 +144,5 @@ async def credits(ctx):
     embed.add_field(name='Library Help', value="Semisol#0001", inline=False)
     await ctx.send(embed=embed)
 
-TOKEN = "NzM2MzU2NDg1MDQyMjc0MzA0.Xxtnag.iJ4PU9FXLLizSzypMVj6uRJ35GM"
+TOKEN = token
 client.run(TOKEN)
