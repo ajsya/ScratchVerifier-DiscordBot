@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 id = os.getenv("ID")
-secret = os.getenv("Secret")
+secret = os.getenv("SECRET")
 token = os.getenv("TOKEN")
 
 client = commands.Bot(command_prefix='?')
