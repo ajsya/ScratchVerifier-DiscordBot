@@ -1,13 +1,10 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.converter import InviteConverter
-from discord.ext.commands.core import check
 from discord.utils import get
 import requests
 import json
 import asyncio
 import os
-import dotenv
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -47,7 +44,7 @@ async def verify(ctx, username):
     try:
         reaction, user = await client.wait_for('reaction_add', check=check, timeout=120.0)
     except asyncio.TimeoutError:
-        await ctx.send("User Verification Cancled!")
+        await ctx.send("User Verification Timedout!")
     else:
         if str(reaction.emoji) == '✅':
             r = requests.post('https://scratchverifier.ddns.net/verify/' + username, auth=(id, secret))
@@ -110,9 +107,9 @@ async def scratchstats(ctx, username):
     icon_url=icon)
     embed.add_field(name='Followers', value=userFollowers, inline=True)
     embed.add_field(name='Following', value=userFollowing, inline=True)
-    embed.add_field(name='Total Loves', value=userLoves, inline=False)
+    embed.add_field(name='Total Loves', value=userLoves, inline=True)
     embed.add_field(name='Total Favorites', value=userFavorites, inline=True)    
-    embed.add_field(name='Total Views', value=userViews, inline=False)
+    embed.add_field(name='Total Views', value=userViews, inline=True)
     embed.add_field(name='Total Comments', value=userComments, inline=True)
     message = await ctx.send(embed=embed)
 
